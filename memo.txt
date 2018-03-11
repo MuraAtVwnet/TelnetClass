@@ -1,0 +1,91 @@
+﻿telnet ネゴシエーション メモ
+
+◆ RFC
+RFC 854 - Telnet Protocol Specification
+RFC 855 - Telnet Option Specifications
+オプションはその他いっぱいあり
+
+◆ 基本的なネゴシエーションのお約束
+----------------------------------
+送信 → リプライ
+----------------------------------
+・要求
+使う : DO → WILL
+使わない : DO → WONT
+やめさせる : WONT → WONT
+
+・宣言
+使う : WILL → DO
+使わない: WILL → DONT
+無効にする DONT → DONT
+
+・値設定
+DO → WILL → SB(要求) → SB(値渡す)
+
+◆ 使う使わない設定(SB 以外の通信シーケンス)
+----------------------------------
+Server - Client
+DO / WILL / WONT / DONT
+----------------------------------
+DO →	: Client に使用を要求(DO を受信)
+← WILL	: Client が使用を同意
+← WONT : Client が使用を拒否
+
+← DO	: Server に使用を要求(DO を送信)
+WILL →	: Server が使用を同意
+WONT →	: Server が使用を拒否
+
+WONT → : Client に使用しない要求
+← WONT	: Client が使用しないに同意
+
+← WONT	: Server に使用しない要求
+WONT →	: Server が使用しないに同意
+
+WILL →	: Server が使用を宣言
+← DO	: Server の使用に同意
+← DONT	: Server の使用を拒否
+
+← WILL	: Client が使用を宣言
+→ DO	: Client の使用に同意
+→ DONT	: Client の使用を拒否
+
+DONT →	: Server が使用しない宣言
+← DONT	: Server の使用しないに同意
+
+← DONT	: Client が使用しない宣言
+DONT →	: Client の使用しないに同意
+
+
+◆ 値設定(SB 通信シーケンス)
+----------------------------------
+Server - Client
+----------------------------------
+New Enviroment Optin
+(IAC DO 0x27 →)
+(← IAC WILL 0x27)
+IAC SB 0x27 0x01 IAC SE→
+← IAC SB 0x27 0x00 IAC SE
+
+Terminal Type
+(IAC DO 0x18 →)
+(← IAC WILL 0x18)
+IAC SB 0x18 0x01 IAC SE→
+← IAC SB 0x18 0x00 "ANSI" IAC SE
+
+# これ実装しなかった
+Windows Size
+(IAC DO 0x1f →)
+(← IAC WILL 0x1f)
+IAC DO 0x1f →
+← IAC SB 0x1f 0x00 0x78 0x00 0x32 IAC SE
+
+◆データフォーマット
+命令: DO / WILL / WONT / DONT
+オプション: ECHO / GoAhead / .....
+
+・使う使わないのハンドシェーク
+[IAC][命令][オプション]
+
+・値を設定するハンドシェーク
+[IAC][SB][オプション][0x01] →
+← [IAC][SB][オプション][0x00][設定値][IAC][SE]

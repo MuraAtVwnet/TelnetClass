@@ -1,0 +1,29 @@
+﻿◆ メソッド構造
+
+■ 単独メソッド
+Byte2Hex		# byte から Hex へ変換(protected)
+Send			# 送信(public)
+DisConnect		# 切断(public)
+SetEnvironment	# 環境設定変更(public)
+Log				# ログ出力(public)
+
+■ ツリー構造
+Connect				# 接続(public)
+	SetDecisionTable		# デシジョンテーブルセット(protected)
+
+Receive				# 受信(public)
+	ReceiveIAC			# IAC 受信(protected)
+		ReceiveSBOrder		# SB 命令処理(protected)
+			SelectDecisionTable4SB			# SB 用のデシジョンテーブル抽出(protected)
+			SetSendBufferNewEnviromentOptin	# NewEnviromentOptin 送信バッファセット(protected)
+			SetSendBufferTerminalType		# SetSendBufferTerminalType 送信バッファセット(protected)
+			SetInternalData					# 内部データーセット(protected)
+
+		ReceiveNotSBOrder	# SB 以外命令処理(protected)
+			SelectDecisionTable4NotSB		# SB 以外のデシジョンテーブル抽出(protected)
+			SetSendBuffer					# 送信バッファセット(protected)
+			SetInternalData					# 内部データーセット(protected)
+
+	RequestNotSetOption	# 未処理オプション リクエス(protected)
+		RequestNotSetClientOption	# Client 未処理オプション リクエスト(protected)
+		RequestNotSetServerOption	# Server 未処理オプション リクエスト(protected)
